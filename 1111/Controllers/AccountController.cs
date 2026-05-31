@@ -124,7 +124,7 @@ public class AccountController(
         if (user == null)
         {
             // Don't reveal that the user does not exist
-            TempData["SuccessMessage"] = "If an account with that email exists, a password reset link has been sent.";
+            TempData["SuccessMessage"] = "Если аккаунт с таким email существует, ссылка для сброса пароля была отправлена.";
             return View();
         }
 
@@ -218,7 +218,7 @@ public class AccountController(
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token))
         {
-            ViewBag.ErrorMessage = "Invalid password reset link.";
+            ViewBag.ErrorMessage = "Недействительная ссылка для сброса пароля.";
             return View();
         }
 
@@ -241,7 +241,7 @@ public class AccountController(
         catch (Exception ex)
         {
             Console.WriteLine("RESET PASSWORD - Token decode error: " + ex.Message);
-            ViewBag.ErrorMessage = "Invalid password reset link.";
+            ViewBag.ErrorMessage = "Недействительная ссылка для сброса пароля.";
             return View();
         }
     }
@@ -260,7 +260,7 @@ public class AccountController(
         if (user == null)
         {
             // Don't reveal that the user does not exist
-            ViewBag.ErrorMessage = "Invalid password reset attempt.";
+            ViewBag.ErrorMessage = "Недействительная попытка сброса пароля.";
             return View();
         }
 

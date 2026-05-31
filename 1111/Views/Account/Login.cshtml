@@ -1,11 +1,11 @@
 @model _1111.ViewModels.LoginViewModel
 @{
     Layout = null;
-    ViewData["Title"] = "Sign In";
+    ViewData["Title"] = "Вход";
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -126,9 +126,9 @@
 <body>
     <div class="auth-page">
         <div class="auth-card">
-            <a asp-controller="Home" asp-action="Index" class="close-btn" aria-label="Back to home">&times;</a>
-            <h1>Welcome back</h1>
-            <p class="subtitle">Sign in to view your bookings and reserve stations.</p>
+            <a asp-controller="Home" asp-action="Index" class="close-btn" aria-label="На главную">&times;</a>
+            <h1>С возвращением</h1>
+            <p class="subtitle">Войдите, чтобы просмотреть ваши бронирования и забронировать места.</p>
 
             <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate>
                 @Html.AntiForgeryToken()
@@ -142,11 +142,11 @@
                 <input asp-for="Password" />
                 <span asp-validation-for="Password" class="field-error"></span>
 
-                <button type="submit" class="btn-gradient">Sign In</button>
+                <button type="submit" class="btn-gradient">Войти</button>
             </form>
 
-            <p class="hint">No account yet? <a asp-controller="Account" asp-action="Register">Sign Up</a></p>
-            <p class="hint"><a asp-controller="Account" asp-action="ForgotPassword">Forgot Password?</a></p>
+            <p class="hint">Нет аккаунта? <a asp-controller="Account" asp-action="Register">Регистрация</a></p>
+            <p class="hint"><a asp-controller="Account" asp-action="ForgotPassword">Забыли пароль?</a></p>
         </div>
     </div>
     <partial name="_ValidationScriptsPartial" />

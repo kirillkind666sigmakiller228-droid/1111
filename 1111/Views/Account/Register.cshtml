@@ -1,11 +1,11 @@
 @model _1111.ViewModels.RegisterViewModel
 @{
     Layout = null;
-    ViewData["Title"] = "Sign Up";
+    ViewData["Title"] = "Регистрация";
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -126,9 +126,9 @@
 <body>
     <div class="auth-page">
         <div class="auth-card">
-            <a asp-controller="Home" asp-action="Index" class="close-btn" aria-label="Back to home">&times;</a>
-            <h1>Create account</h1>
-            <p class="subtitle">Join CYBERZONE and start booking your gaming setup.</p>
+            <a asp-controller="Home" asp-action="Index" class="close-btn" aria-label="На главную">&times;</a>
+            <h1>Создать аккаунт</h1>
+            <p class="subtitle">Присоединяйтесь к CYBERZONE и начните бронировать игровое место.</p>
 
             <form asp-action="Register" method="post" novalidate>
                 @Html.AntiForgeryToken()
@@ -154,10 +154,10 @@
                 <input asp-for="ConfirmPassword" />
                 <span asp-validation-for="ConfirmPassword" class="field-error"></span>
 
-                <button type="submit" class="btn-gradient">Sign Up</button>
+                <button type="submit" class="btn-gradient">Регистрация</button>
             </form>
 
-            <p class="hint">Already have an account? <a asp-controller="Account" asp-action="Login">Sign In</a></p>
+            <p class="hint">Уже есть аккаунт? <a asp-controller="Account" asp-action="Login">Войти</a></p>
         </div>
     </div>
     <partial name="_ValidationScriptsPartial" />

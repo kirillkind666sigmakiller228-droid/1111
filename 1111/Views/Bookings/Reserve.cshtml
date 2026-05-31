@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<_1111.Models.Computer>
 @{
-    ViewData["Title"] = "Reserve Station";
+    ViewData["Title"] = "Забронировать место";
     var search = ViewData["Search"]?.ToString() ?? "";
     var zoneCategory = ViewData["ZoneCategory"]?.ToString() ?? "";
     var status = ViewData["Status"]?.ToString() ?? "";
@@ -13,55 +13,55 @@
             </div>
         }
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="text-3xl font-extrabold tracking-tight">Select Your Gaming Station</h1>
-            <a asp-controller="Home" asp-action="Index" class="text-sm text-slate-400 hover:text-white">Back to Home</a>
+            <h1 class="text-3xl font-extrabold tracking-tight">Выберите игровое место</h1>
+            <a asp-controller="Home" asp-action="Index" class="text-sm text-slate-400 hover:text-white">На главную</a>
         </div>
 
         <div class="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
             <aside class="rounded-2xl border border-blue-400/30 bg-slate-900/80 p-5">
-                <h2 class="mb-4 text-lg font-semibold">Filters</h2>
+                <h2 class="mb-4 text-lg font-semibold">Фильтры</h2>
                 <form method="get" asp-action="Reserve" class="space-y-4">
                     <div>
-                        <label class="mb-1 block text-sm text-slate-300">Search</label>
+                        <label class="mb-1 block text-sm text-slate-300">Поиск</label>
                         <input
                             type="text"
                             name="search"
                             value="@search"
-                            placeholder="PC name, CPU, GPU..."
+                            placeholder="Название ПК, CPU, GPU..."
                             class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none ring-0 transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]" />
                     </div>
 
                     <div>
-                        <label class="mb-1 block text-sm text-slate-300">Zone Category</label>
+                        <label class="mb-1 block text-sm text-slate-300">Категория зоны</label>
                         <select name="zoneCategory" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]">
-                            <option value="">All</option>
-                            <option value="Standard" selected="@(zoneCategory == "Standard")">Standard</option>
+                            <option value="">Все</option>
+                            <option value="Standard" selected="@(zoneCategory == "Standard")">Стандарт</option>
                             <option value="VIP" selected="@(zoneCategory == "VIP")">VIP</option>
-                            <option value="Console" selected="@(zoneCategory == "Console")">Console</option>
+                            <option value="Console" selected="@(zoneCategory == "Console")">Консоль</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="mb-1 block text-sm text-slate-300">Status</label>
+                        <label class="mb-1 block text-sm text-slate-300">Статус</label>
                         <select name="status" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]">
-                            <option value="">All</option>
-                            <option value="available" selected="@(status == "available")">Available</option>
-                            <option value="occupied" selected="@(status == "occupied")">Occupied</option>
+                            <option value="">Все</option>
+                            <option value="available" selected="@(status == "available")">Доступно</option>
+                            <option value="occupied" selected="@(status == "occupied")">Занято</option>
                         </select>
                     </div>
 
                     <div class="flex gap-2 pt-2">
                         <button type="submit" class="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">
-                            Apply
+                            Применить
                         </button>
-                        <a asp-action="Reserve" class="rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Reset</a>
+                        <a asp-action="Reserve" class="rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Сбросить</a>
                     </div>
                 </form>
             </aside>
 
             <section>
                 <div class="mb-4 flex items-center justify-between">
-                    <p class="text-sm text-slate-400">Showing <span class="font-semibold text-slate-200">@Model.Count()</span> stations</p>
+                    <p class="text-sm text-slate-400">Показано <span class="font-semibold text-slate-200">@Model.Count()</span> мест</p>
                 </div>
 
                 <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -98,7 +98,7 @@
                         var statusClasses = computer.IsAvailable
                             ? "bg-emerald-500/90 text-white"
                             : "bg-rose-500/90 text-white";
-                        var statusText = computer.IsAvailable ? "Available" : "Occupied";
+                        var statusText = computer.IsAvailable ? "Доступно" : "Занято";
 
                         <article class="overflow-hidden rounded-2xl border border-blue-400/20 bg-slate-900/70">
                             <div class="relative">
@@ -121,7 +121,7 @@
                                         class="reserve-btn inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                                         data-pcid="@computer.Id"
                                         data-pcname="@computer.Name">
-                                    Reserve Now
+                                    Забронировать
                                 </button>
                             </div>
                         </article>
@@ -131,42 +131,42 @@
         <div id="reservationModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4">
     <div class="w-full max-w-xl rounded-2xl border border-blue-400/30 bg-slate-900 p-5">
         <div class="mb-4 flex items-center justify-between">
-            <h3 class="text-xl font-bold">Confirm reservation</h3>
+            <h3 class="text-xl font-bold">Подтвердить бронирование</h3>
             <button type="button" id="closeModalBtn" class="text-2xl text-slate-400 hover:text-white">&times;</button>
         </div>
 
         <div class="space-y-4">
             <div>
-                <p class="text-sm text-slate-400">PC Name</p>
+                <p class="text-sm text-slate-400">Название ПК</p>
                 <p id="modalPcName" class="font-semibold text-slate-100"></p>
             </div>
             <div>
-                <label for="bookingDate" class="mb-1 block text-sm text-slate-300">Date</label>
+                <label for="bookingDate" class="mb-1 block text-sm text-slate-300">Дата</label>
                 <input id="bookingDate" type="date" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]" />
             </div>
             <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div class="w-full">
-                    <label for="startTimeSelect" class="mb-1 block text-sm text-slate-300">Start Time</label>
+                    <label for="startTimeSelect" class="mb-1 block text-sm text-slate-300">Время начала</label>
                     <select id="startTimeSelect" class="h-10 w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]"></select>
                 </div>
                 <div class="w-full">
-                    <label for="endTimeSelect" class="mb-1 block text-sm text-slate-300">End Time</label>
+                    <label for="endTimeSelect" class="mb-1 block text-sm text-slate-300">Время окончания</label>
                     <select id="endTimeSelect" class="h-10 w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]"></select>
                 </div>
             </div>
             <div>
-                <p class="mb-2 text-sm text-slate-300">Occupied timeline (10:00 - 22:00)</p>
+                <p class="mb-2 text-sm text-slate-300">Занятое время (10:00 - 22:00)</p>
                 <div id="timeline" class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-12"></div>
             </div>
             <div class="rounded-xl border border-blue-400/20 bg-slate-950 p-3">
-                <p id="bookingSummary" class="text-sm text-slate-200">You are booking ...</p>
-                <p id="slotError" class="mt-1 hidden text-sm text-rose-400">This time slot is already taken</p>
+                <p id="bookingSummary" class="text-sm text-slate-200">Вы бронируете ...</p>
+                <p id="slotError" class="mt-1 hidden text-sm text-rose-400">Это время уже занято</p>
             </div>
         </div>
 
         <div class="mt-5 flex gap-2">
-            <button type="button" id="cancelBtn" class="flex-1 rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Cancel</button>
-            <button type="button" id="confirmBtn" class="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">Confirm Booking</button>
+            <button type="button" id="cancelBtn" class="flex-1 rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Отмена</button>
+            <button type="button" id="confirmBtn" class="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">Подтвердить бронирование</button>
         </div>
     </div>
 </div>
@@ -274,15 +274,15 @@
             const overlaps = !invalidOrder && occupiedHours.some(h => h >= startHour && h < endHour);
             const duration = invalidOrder ? 0 : endHour - startHour;
 
-            bookingSummary.textContent = `You are booking ${selectedPcName || "..."} for ${duration} hours`;
+            bookingSummary.textContent = `Вы бронируете ${selectedPcName || "..."} на ${duration} ч`;
 
             if (invalidOrder || overlaps || hasPastHours) {
                 slotError.classList.remove("hidden");
                 slotError.textContent = overlaps
-                    ? "This time slot is already taken"
+                    ? "Это время уже занято"
                     : hasPastHours
-                        ? "You cannot book past time slots for today"
-                    : "End time must be later than start time";
+                        ? "Нельзя бронировать прошедшее время на сегодня"
+                    : "Время окончания должно быть позже начала";
                 confirmBtn.disabled = true;
                 confirmBtn.classList.add("opacity-50", "cursor-not-allowed");
                 return false;
@@ -378,20 +378,20 @@
 
                 const result = await response.json();
                 if (!response.ok || !result.success) {
-                    throw new Error(result.message || "Reservation failed");
+                    throw new Error(result.message || "Бронирование не удалось");
                 }
 
                 closeModal();
 
                 const dialogResult = await Swal.fire({
-                    title: "Booking successful!",
-                    text: `${result.intervalLabel}. Do you want to see your reservations?`,
+                    title: "Бронирование успешно!",
+                    text: `${result.intervalLabel}. Хотите посмотреть ваши бронирования?`,
                     icon: "success",
                     background: "#111827",
                     color: "#E5E7EB",
                     showCancelButton: true,
-                    confirmButtonText: "Go to My Bookings",
-                    cancelButtonText: "Stay here",
+                    confirmButtonText: "Перейти к бронированиям",
+                    cancelButtonText: "Остаться здесь",
                     confirmButtonColor: "#3B82F6",
                     cancelButtonColor: "#334155"
                 });
@@ -403,8 +403,8 @@
                 }
             } catch (error) {
                 await Swal.fire({
-                    title: "Error",
-                    text: error.message || "Could not create reservation.",
+                    title: "Ошибка",
+                    text: error.message || "Не удалось создать бронирование.",
                     icon: "error",
                     background: "#111827",
                     color: "#E5E7EB",

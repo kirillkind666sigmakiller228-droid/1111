@@ -228,50 +228,50 @@
 
 <section class="hero">
     <div>
-        <span class="tag">Premium Gaming Experience</span>
+        <span class="tag">Премиальный игровой опыт</span>
         <h1>
-            Book your
-            <span class="gradient-text">gaming setup</span>
-            in minutes
+            Забронируйте
+            <span class="gradient-text">игровое место</span>
+            за минуты
         </h1>
         <p>
-            Reserve gaming PCs, VIP rooms, and console zones online. Play on the latest hardware
-            with friends in our premium club.
+            Бронируйте игровые ПК, VIP-комнаты и консольные зоны онлайн. Играйте на новейшем оборудовании
+            с друзьями в нашем премиальном клубе.
         </p>
         <div class="hero-actions"> 
             @if (User.Identity?.IsAuthenticated != true) 
             { 
-                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Book Now</a> 
-                <a asp-controller="Account" asp-action="Login" class="btn btn-outline">My Bookings</a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Забронировать</a> 
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline">Мои бронирования</a>
             } 
             else 
             { 
-                <a asp-controller="Bookings" asp-action="Reserve" class="btn btn-primary">Book Now</a> 
-                <a asp-controller="Bookings" asp-action="Index" class="btn btn-outline">My Bookings</a>
+                <a asp-controller="Bookings" asp-action="Reserve" class="btn btn-primary">Забронировать</a> 
+                <a asp-controller="Bookings" asp-action="Index" class="btn btn-outline">Мои бронирования</a>
             } 
         </div>
     </div>
 
     <div class="stats">
         <div class="panel">
-            <h4>Available now</h4>
+            <h4>Доступно сейчас</h4>
             <div class="live-grid">
                 <div class="live-card">
                     <strong>@totalStations</strong>
-                    <span>PCs free</span>
+                    <span>ПК свободно</span>
                 </div>
                 <div class="live-card">
                     <strong>@vipRooms</strong>
-                    <span>VIP rooms</span>
+                    <span>VIP-комнаты</span>
                 </div>
                 <div class="live-card">
                     <strong>@consoles</strong>
-                    <span>Consoles</span>
+                    <span>Консоли</span>
                 </div>
             </div>
         </div>
         <div class="panel">
-            <h4>Popular Time Slots</h4>
+            <h4>Популярное время</h4>
             <div class="times">
                 <span class="time-chip">14:00</span>
                 <span class="time-chip">16:00</span>
@@ -284,8 +284,8 @@
 </section>
 
 <div class="section-title">
-    <h2>Gaming Zones</h2>
-    <p>Choose your perfect gaming environment</p>
+    <h2>Игровые зоны</h2>
+    <p>Выберите идеальную игровую среду</p>
 </div>
 
 <section class="zones">
@@ -319,7 +319,7 @@
             imagePath = Url.Content("~/img/GamingStation.png");
         }
         
-        var statusText = zone.IsOccupiedNow ? "Occupied" : "Available";
+        var statusText = zone.IsOccupiedNow ? "Занято" : "Доступно";
         var statusColor = zone.IsOccupiedNow ? "#ef4444" : "#22c55e";
 
         <article class="zone-card">
@@ -343,11 +343,11 @@
                 </div>
 
                 <div class="price">
-                    <span>Resource booking</span>
+                    <span>Бронирование ресурса</span>
                     <a asp-controller="Bookings"
                        asp-action="Reserve"
                        class="btn btn-primary"
-                       style="padding:8px 14px;">Reserve Now</a>
+                       style="padding:8px 14px;">Забронировать</a>
                 </div>
             </div>
         </article>

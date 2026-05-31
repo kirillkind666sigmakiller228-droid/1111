@@ -2,13 +2,13 @@
 @inject _1111.Data.ApplicationDbContext DbContext
 @{
     var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
-    var displayName = currentUser?.UserName ?? "Player";
+    var displayName = currentUser?.UserName ?? "Игрок";
     var unreadNotifications = currentUser is null
         ? 0
         : DbContext.Notifications.Count(n => n.UserId == currentUser.Id && !n.IsRead);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,27 +36,27 @@
                 </div>
                 <div class="leading-tight">
                     <div class="font-bold tracking-wide text-white">CYBERZONE</div>
-                    <div class="text-xs font-medium text-cyan-300">Gaming Club</div>
+                    <div class="text-xs font-medium text-cyan-300">Игровой клуб</div>
                 </div>
             </a>
 
             <nav class="hidden md:flex items-center justify-center flex-1 gap-6 text-sm text-slate-300">
-                <a asp-controller="Home" asp-action="Index" class="nav-link hover:text-white">Home</a>
-                <a asp-controller="Bookings" asp-action="Reserve" class="nav-link hover:text-white">Stations/Browse</a>
+                <a asp-controller="Home" asp-action="Index" class="nav-link hover:text-white">Главная</a>
+                <a asp-controller="Bookings" asp-action="Reserve" class="nav-link hover:text-white">Места</a>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <a asp-controller="Bookings" asp-action="Index" class="nav-link hover:text-white">My Bookings</a>
+                    <a asp-controller="Bookings" asp-action="Index" class="nav-link hover:text-white">Мои бронирования</a>
                 }
                 @if (User.IsInRole("Admin"))
                 {
-                    <a asp-controller="Admin" asp-action="Index" class="nav-link hover:text-white text-cyan-300 font-semibold">Admin Panel</a>
+                    <a asp-controller="Admin" asp-action="Index" class="nav-link hover:text-white text-cyan-300 font-semibold">Панель администратора</a>
                 }
             </nav>
 
             <div class="flex items-center gap-2 text-sm">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <a asp-controller="Notifications" asp-action="Index" class="relative rounded-xl border border-slate-600 px-3 py-2 text-slate-300 transition hover:text-white" title="Notifications" aria-label="Notifications">
+                    <a asp-controller="Notifications" asp-action="Index" class="relative rounded-xl border border-slate-600 px-3 py-2 text-slate-300 transition hover:text-white" title="Уведомления" aria-label="Уведомления">
                         <span>🔔</span>
                         @if (unreadNotifications > 0)
                         {
@@ -66,13 +66,13 @@
                     <a asp-controller="Account" asp-action="Profile" class="text-blue-100 hover:text-white">@displayName</a>
                     <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="rounded-xl border border-slate-600 px-3 py-2 text-slate-300 transition hover:text-white">Logout</button>
+                        <button type="submit" class="rounded-xl border border-slate-600 px-3 py-2 text-slate-300 transition hover:text-white">Выйти</button>
                     </form>
                 }
                 else
                 {
-                    <a asp-controller="Account" asp-action="Login" class="text-blue-100 hover:text-white">Sign In</a>
-                    <a asp-controller="Account" asp-action="Register" class="rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">Sign Up</a>
+                    <a asp-controller="Account" asp-action="Login" class="text-blue-100 hover:text-white">Войти</a>
+                    <a asp-controller="Account" asp-action="Register" class="rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">Регистрация</a>
                 }
             </div>
         </div>
@@ -91,37 +91,37 @@
                     </div>
                     <div>
                         <div class="font-semibold">CYBERZONE</div>
-                        <div class="text-xs text-cyan-300">Gaming Club</div>
+                        <div class="text-xs text-cyan-300">Игровой клуб</div>
                     </div>
                 </div>
-                <p class="text-sm text-slate-400">Premium gaming station booking platform for students and gamers.</p>
+                <p class="text-sm text-slate-400">Платформа для бронирования игровых мест для студентов и геймеров.</p>
             </div>
             <div>
-                <h4 class="mb-2 font-semibold">Quick Links</h4>
+                <h4 class="mb-2 font-semibold">Быстрые ссылки</h4>
                 <ul class="space-y-1 text-sm text-slate-400">
-                    <li>Browse Stations</li>
-                    <li>My Bookings</li>
-                    <li>About Club</li>
+                    <li>Места</li>
+                    <li>Мои бронирования</li>
+                    <li>О клубе</li>
                 </ul>
             </div>
             <div>
-                <h4 class="mb-2 font-semibold">Opening Hours</h4>
+                <h4 class="mb-2 font-semibold">Часы работы</h4>
                 <ul class="space-y-1 text-sm text-slate-400">
-                    <li>Mon-Fri: 10:00 - 23:00</li>
-                    <li>Sat-Sun: 12:00 - 02:00</li>
+                    <li>Пн-Пт: 10:00 - 23:00</li>
+                    <li>Сб-Вс: 12:00 - 02:00</li>
                 </ul>
             </div>
             <div>
-                <h4 class="mb-2 font-semibold">Contact</h4>
+                <h4 class="mb-2 font-semibold">Контакты</h4>
                 <ul class="space-y-1 text-sm text-slate-400">
                     <li>borodako.k@@gmail.com</li>
                     <li>+375 (29) 149-83-22</li>
-                    <li>456 Tech Street</li>
+                    <li>ул. Технологическая, 456</li>
                 </ul>
             </div>
         </div>
         <div class="border-t border-slate-700/40 py-4 text-center text-sm text-slate-500">
-            &copy; 2026 CYBERZONE Gaming Club. Course Project - Built with ASP.NET MVC.
+            &copy; 2026 CYBERZONE Игровой клуб. Курсовой проект - Создано на ASP.NET MVC.
         </div>
     </footer>
 
