@@ -1,0 +1,45 @@
+@model _1111.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="min-h-screen bg-[#0B0E14] py-8 text-slate-100">
+    <div class="mx-auto w-[92%] max-w-6xl">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white">Admin Dashboard</h1>
+                <p class="text-sm text-slate-400">Control gaming stations, bookings and club performance.</p>
+            </div>
+            <div class="flex gap-2">
+                <a asp-controller="Home" asp-action="Index" class="rounded-lg border border-blue-400/40 bg-slate-900 px-3 py-2 text-xs font-semibold text-blue-200 transition hover:border-cyan-300 hover:text-cyan-200">
+                    Выход в клуб
+                </a>
+                <a asp-action="Computers" class="rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-500/20">
+                    Manage Computers
+                </a>
+                <a asp-action="Bookings" class="rounded-lg border border-violet-400/40 bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/20">
+                    Manage Bookings
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div class="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-blue-400/20 bg-slate-900/70 p-5 text-center shadow-[0_0_24px_rgba(59,130,246,0.12)]">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Всего компьютеров</p>
+                <p class="mt-2 text-3xl font-bold text-blue-300">@Model.TotalComputers</p>
+            </div>
+            <div class="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-emerald-400/20 bg-slate-900/70 p-5 text-center shadow-[0_0_24px_rgba(16,185,129,0.12)]">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Активных броней сегодня</p>
+                <p class="mt-2 text-3xl font-bold text-emerald-300">@Model.ActiveBookingsToday</p>
+            </div>
+            <div class="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-violet-400/20 bg-slate-900/70 p-5 text-center shadow-[0_0_24px_rgba(139,92,246,0.12)]">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Всего бронирований</p>
+                <p class="mt-2 text-3xl font-bold text-violet-300">@Model.TotalBookings</p>
+            </div>
+            <div class="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-cyan-400/20 bg-slate-900/70 p-5 text-center shadow-[0_0_24px_rgba(34,211,238,0.12)]">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Зарегистрированных пользователей</p>
+                <p class="mt-2 text-3xl font-bold text-cyan-300">@Model.RegisteredUsers</p>
+            </div>
+        </div>
+    </div>
+</div>

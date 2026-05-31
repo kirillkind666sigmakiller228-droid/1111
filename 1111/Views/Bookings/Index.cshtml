@@ -1,0 +1,162 @@
+@model IEnumerable<_1111.Models.Booking>
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+        <div class="mb-6 flex items-center justify-between">
+            <h1 class="text-3xl font-extrabold tracking-tight">My Bookings</h1>
+            <a asp-controller="Bookings" asp-action="Reserve" class="text-sm text-slate-400 hover:text-white">Reserve more</a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="rounded-2xl border border-blue-400/20 bg-slate-900/70 p-6 text-slate-300">
+                You have no reservations yet.
+            </div>
+        }
+        else
+        {
+            <div class="space-y-4">
+                @foreach (var booking in Model)
+                {
+                    var zone = booking.Computer?.ZoneCategory ?? "Standard";
+                    string imagePath;
+                    
+                    // Case-insensitive zone category matching with null safety
+                    if (!string.IsNullOrEmpty(zone))
+                    {
+                        if (zone.Contains("VIP", StringComparison.OrdinalIgnoreCase))
+                        {
+                            imagePath = Url.Content("~/img/vip.jpg");
+                        }
+                        else if (zone.Contains("Console", StringComparison.OrdinalIgnoreCase) || 
+                                zone.Contains("PS5", StringComparison.OrdinalIgnoreCase))
+                        {
+                            imagePath = Url.Content("~/img/console.jpg");
+                        }
+                        else if (zone.Contains("PC", StringComparison.OrdinalIgnoreCase))
+                        {
+                            imagePath = Url.Content("~/img/PCzone.png");
+                        }
+                        else
+                        {
+                            imagePath = Url.Content("~/img/GamingStation.png");
+                        }
+                    }
+                    else
+                    {
+                        // Fallback for null or empty zone
+                        imagePath = Url.Content("~/img/GamingStation.png");
+                    }
+                    var startLocal = booking.StartTimeUtc.ToLocalTime();
+                    var endLocal = booking.EndTimeUtc.ToLocalTime();
+                    var dayLabel = startLocal.Date == DateTime.Today ? "Today" : startLocal.ToString("dd.MM.yyyy");
+                    var now = DateTime.Now;
+                    var timerLabel = "Awaiting session";
+                    var badgeText = booking.Status;
+                    var badgeClass = "bg-blue-600/90";
+                    var pulseClass = "";
+                    var isFinishedByTime = booking.Status != _1111.Models.BookingStatus.Cancelled.ToString() && endLocal <= now;
+                    var showCancelButton = booking.Status == _1111.Models.BookingStatus.Confirmed.ToString() && startLocal > now;
+
+                    if (isFinishedByTime)
+                    {
+                        badgeText = _1111.Models.BookingStatus.Finished.ToString();
+                        badgeClass = "bg-emerald-600/90";
+                        timerLabel = "Session finished";
+                    }
+                    else if (booking.Status == _1111.Models.BookingStatus.Cancelled.ToString())
+                    {
+                        badgeText = _1111.Models.BookingStatus.Cancelled.ToString();
+                        badgeClass = "bg-slate-600/90";
+                        timerLabel = "Reservation cancelled";
+                    }
+                    else if (booking.Status == _1111.Models.BookingStatus.Active.ToString())
+                    {
+                        var untilEnd = endLocal - now;
+                        timerLabel = $"Ends in {(int)untilEnd.TotalHours}h {untilEnd.Minutes}m";
+                        badgeText = _1111.Models.BookingStatus.Active.ToString();
+                        badgeClass = "bg-emerald-500/90";
+                        pulseClass = "animate-pulse";
+                    }
+                    else
+                    {
+                        var untilStart = startLocal - now;
+                        if (untilStart.TotalHours >= 1)
+                        {
+                            timerLabel = $"Starts in {(int)untilStart.TotalHours}h {untilStart.Minutes}m";
+                        }
+                        else
+                        {
+                            timerLabel = $"Starts in {Math.Max(1, (int)Math.Ceiling(untilStart.TotalMinutes))} min";
+                        }
+
+                        badgeText = _1111.Models.BookingStatus.Confirmed.ToString();
+                        badgeClass = "bg-blue-500/90";
+                    }
+
+                    <article class="rounded-2xl border border-blue-400/20 bg-slate-900/70 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex min-w-[240px] flex-1 items-center gap-3">
+                                <img src="@imagePath" alt="" class="h-20 w-32 rounded-xl object-cover" onerror="this.src='@Url.Content("~/img/GamingStation.png")'" />
+                                <div>
+                                    <h3 class="font-bold text-white">@booking.Computer?.Name</h3>
+                                    <p class="text-xs text-slate-400">@booking.Computer?.Cpu / @booking.Computer?.Gpu / @booking.Computer?.Ram</p>
+                                </div>
+                            </div>
+
+                            <div class="min-w-[200px] text-sm text-slate-300">
+                                @dayLabel, @startLocal.ToString("HH:mm") - @endLocal.ToString("HH:mm")
+                            </div>
+
+                            <div class="flex min-w-[180px] flex-col items-end gap-2">
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold text-white @badgeClass">@badgeText</span>
+                                @if (showCancelButton)
+                                {
+                                    <form asp-controller="Bookings" asp-action="CancelBooking" method="post" class="cancel-booking-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@booking.Id" />
+                                        <button type="submit"
+                                                class="rounded-md border border-rose-500/50 bg-transparent px-2.5 py-1 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10"
+                                                data-booking-name="@booking.Computer?.Name">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                }
+                                <p class="text-xs text-slate-400 @pulseClass">@timerLabel</p>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll(".cancel-booking-form").forEach((form) => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const bookingName = form.querySelector("button[data-booking-name]")?.dataset.bookingName || "this booking";
+                const result = await Swal.fire({
+                    title: "Cancel booking?",
+                    text: `Are you sure you want to cancel ${bookingName}?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, cancel",
+                    cancelButtonText: "No",
+                    confirmButtonColor: "#ef4444",
+                    cancelButtonColor: "#334155",
+                    background: "#111827",
+                    color: "#E5E7EB"
+                });
+
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}

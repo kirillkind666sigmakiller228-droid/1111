@@ -1,0 +1,43 @@
+@model _1111.Models.Computer
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="min-h-screen bg-[#0B0E14] py-10 text-slate-100">
+    <div class="mx-auto w-[92%] max-w-2xl">
+        <a asp-controller="Bookings" asp-action="Reserve" class="mb-5 inline-block text-sm text-slate-400 hover:text-white">Back to stations</a>
+
+        <div class="rounded-2xl border border-blue-400/30 bg-slate-900/80 p-6">
+            <h1 class="mb-2 text-2xl font-bold">@Model.Name</h1>
+            <p class="mb-4 text-slate-400">Choose preferred date and time for your reservation.</p>
+
+            <div class="mb-6 flex flex-wrap gap-2">
+                <span class="rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-1 text-xs text-cyan-200">CPU: @Model.Cpu</span>
+                <span class="rounded-lg border border-blue-400/30 bg-blue-500/10 px-2.5 py-1 text-xs text-blue-200">GPU: @Model.Gpu</span>
+                <span class="rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2.5 py-1 text-xs text-fuchsia-200">RAM: @Model.Ram</span>
+            </div>
+
+            <form class="space-y-4">
+                <div>
+                    <label class="mb-1 block text-sm text-slate-300">Reservation Date and Time</label>
+                    <input type="datetime-local"
+                           class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]" />
+                </div>
+                <div>
+                    <label class="mb-1 block text-sm text-slate-300">Duration</label>
+                    <select class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]">
+                        <option>1 hour</option>
+                        <option>2 hours</option>
+                        <option>3 hours</option>
+                        <option>4 hours</option>
+                    </select>
+                </div>
+
+                <button type="button"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">
+                    Confirm Reservation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -364,3 +364,7 @@ FodyWeavers.xsd
 /1111/app.db
 /1111/app.db-shm
 /1111/app.db-wal
+/1111/temp-build-check/1111.exe
+/1111/temp-build-check/1111.dll
+/1111/temp-build-check/1111.staticwebassets.endpoints.json
+/1111/temp-build-check/1111.staticwebassets.runtime.json

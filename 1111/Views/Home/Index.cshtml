@@ -1,574 +1,355 @@
 ﻿@model _1111.Models.GamingLandingViewModel
 @inject Microsoft.AspNetCore.Identity.UserManager<_1111.Models.ApplicationUser> UserManager
 @{
-    Layout = null;
+    Layout = "_Layout";
     ViewData["Title"] = "CYBERZONE";
     var totalStations = Model.Zones.Sum(z => z.Computers.Count);
     var vipRooms = Model.Zones.Count(z => z.Name.Contains("VIP"));
     var consoles = Model.Zones.Count(z => z.Name.Contains("Console"));
-    var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
-    var displayName = currentUser?.UserName ?? "Player";
-    var balance = currentUser?.Balance ?? 0m;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gaming Club</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0B0E14;
-            --surface: #111827;
-            --surface-2: #121826;
-            --text: #E5E7EB;
-            --muted: #94A3B8;
-            --brand: #3B82F6;
-            --neon: #22D3EE;
-            --violet: #A78BFA;
-            --border: rgba(59, 130, 246, .25);
-        }
 
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: "Inter", "Segoe UI", sans-serif;
-            background: radial-gradient(circle at 15% 10%, rgba(59, 130, 246, .12), transparent 35%), var(--bg);
-            color: var(--text);
-        }
-
-        .container {
-            width: min(1140px, 92%);
-            margin: 0 auto;
-        }
-
-        .topbar {
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(6px);
-            background: rgba(11, 14, 20, .82);
-            border-bottom: 1px solid rgba(59, 130, 246, .2);
-            z-index: 20;
-        }
-
-        .topbar-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0;
-            gap: 16px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            letter-spacing: .2px;
-        }
-
-        .logo-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            box-shadow: 0 0 16px rgba(59, 130, 246, .5);
-        }
-
-        .menu {
-            display: flex;
-            gap: 22px;
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .menu a,
-        .auth a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .auth {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 11px;
-            padding: 10px 18px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: .2s ease;
-        }
-
-        .btn-primary {
-            color: white;
-            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, .32);
-        }
-
-        .btn-primary:hover { filter: brightness(1.08); }
-
-        .btn-outline {
-            color: #E2E8F0;
-            border: 1px solid rgba(59, 130, 246, .35);
-            background: rgba(17, 24, 39, .7);
-        }
-
-        .hero {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 30px;
-            padding: 60px 0 36px;
-        }
-
-        .tag {
-            display: inline-block;
-            font-size: 12px;
-            color: #93C5FD;
-            padding: 6px 12px;
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            margin-bottom: 18px;
-            background: rgba(59, 130, 246, .1);
-        }
-
-        h1 {
-            font-size: clamp(34px, 5vw, 62px);
-            line-height: 1.02;
-            margin: 0 0 18px;
-            letter-spacing: -1.2px;
-        }
-
-        .gradient-text {
-            background: linear-gradient(90deg, #22D3EE, #3B82F6, #A78BFA);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .hero p {
-            color: #A8B3C8;
-            max-width: 520px;
-            margin: 0 0 24px;
-            line-height: 1.55;
-        }
-
-        .hero-actions { display: flex; gap: 12px; }
-
-        .stats {
-            display: grid;
-            gap: 14px;
-            align-content: start;
-        }
-
-        .panel {
-            background: linear-gradient(180deg, rgba(17, 24, 39, .95), rgba(16, 23, 36, .95));
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: inset 0 0 24px rgba(34, 211, 238, .04);
-        }
-
-        .panel h4 {
-            margin: 0 0 12px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .live-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .live-card {
-            background: #1B2438;
-            border: 1px solid rgba(59, 130, 246, .28);
-            border-radius: 12px;
-            padding: 11px;
-        }
-
-        .live-card strong { font-size: 24px; display: block; color: #60A5FA; }
-        .live-card span { color: var(--muted); font-size: 12px; }
-
-        .times {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .time-chip {
-            font-size: 12px;
-            color: #BFDBFE;
-            border: 1px solid rgba(59, 130, 246, .38);
-            border-radius: 10px;
-            padding: 6px 10px;
-            background: rgba(59, 130, 246, .12);
-        }
-
-        .section-title {
-            text-align: center;
-            margin: 48px 0 24px;
-        }
-
-        .section-title h2 {
-            margin: 0 0 6px;
-            font-size: 42px;
-            letter-spacing: -0.8px;
-        }
-
-        .section-title p { margin: 0; color: var(--muted); }
-
-        .zones {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 56px;
-        }
-
-        .zone-card {
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            background: #111827;
-            box-shadow: 0 12px 28px rgba(2, 6, 23, .45);
-        }
-
-        .zone-card img {
-            width: 100%;
-            height: 184px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .zone-body {
-            padding: 16px;
-            display: grid;
-            gap: 10px;
-        }
-
-        .zone-body h3 { margin: 0; font-size: 23px; }
-        .zone-body p { margin: 0; color: #A7B1C3; font-size: 14px; line-height: 1.45; }
-        .hardware {
-            color: var(--neon);
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .specs {
-            border-top: 1px solid rgba(148, 163, 184, .18);
-            padding-top: 8px;
-            display: grid;
-            gap: 6px;
-        }
-
-        .spec-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            font-size: 12px;
-            color: #CBD5E1;
-        }
-
-        .price {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 2px;
-            font-weight: 600;
-        }
-
-        .price span { color: #C4B5FD; }
-
-        footer {
-            border-top: 1px solid rgba(59, 130, 246, .2);
-            margin-top: 30px;
-            background: #0A0D15;
-        }
-
-        .footer-grid {
-            padding: 30px 0;
-            display: grid;
-            grid-template-columns: 1.3fr 1fr 1fr 1fr;
-            gap: 18px;
-        }
-
-        footer h5 { margin: 0 0 12px; font-size: 15px; }
-        footer p,
-        footer li {
-            color: var(--muted);
-            font-size: 14px;
-            margin: 0 0 8px;
-        }
-
-        footer ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .copy {
-            border-top: 1px solid rgba(148, 163, 184, .15);
-            text-align: center;
-            padding: 12px 0 20px;
-            color: #7B8AA2;
-            font-size: 13px;
-        }
-
-        @@media (max-width: 980px) {
-            .hero,
-            .zones,
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .menu { display: none; }
-        }
-    </style>
-</head>
-<body>
-    <header class="topbar">
-        <div class="container topbar-row">
-            <div class="logo">
-                <div class="logo-badge" style="
-    display: flex; 
-    align-items: center; 
-    justify-center: center; 
-    width: 48px; 
-    height: 48px; 
-    background: linear-gradient(135deg, #2563eb, #4338ca); 
-    border-radius: 12px;
-    padding: 10px;
-    overflow: hidden;">
-    <img src="/img/boxicons_joystick.png" 
-         style="width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1);" 
-         alt="Logo">
-</div>
-                <div>
-                    CYBERZONE<br />
-                    <small style="color:#7dd3fc;font-weight:500;">Gaming Club</small>
-                </div>
-            </div>
-
-            <nav class="menu flex items-center gap-6"> 
-    <a asp-controller="Home" asp-action="Index" class="hover:text-blue-400">Browse Stations</a>
-
-    @if (User.Identity?.IsAuthenticated == true) 
-    {
-        <a asp-controller="Bookings" asp-action="Index" class="hover:text-blue-400">My Booking</a>
-        
-        @if (User.IsInRole("Admin")) 
-        {
-            <!-- Эта кнопка появится ТОЛЬКО если у пользователя есть роль Admin -->
-            <a asp-controller="Admin" asp-action="Dashboard" class="text-rose-500 font-bold border border-rose-500 px-3 py-1 rounded-lg hover:bg-rose-500 hover:text-white transition-all">
-                Admin Panel
-            </a>
-        }
-    } 
-    else 
-    {
-        <a asp-controller="Account" asp-action="Login" class="hover:text-blue-400">My Booking</a>
+<style>
+    :root {
+        --bg: #0B0E14;
+        --surface: #111827;
+        --surface-2: #121826;
+        --text: #E5E7EB;
+        --muted: #94A3B8;
+        --brand: #3B82F6;
+        --neon: #22D3EE;
+        --violet: #A78BFA;
+        --border: rgba(59, 130, 246, .25);
     }
-</nav>
 
-            <div class="auth">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <span style="color:#dbeafe;">@displayName</span>
-                    <span style="color:#22d3ee;">Balance: $@balance</span>
-                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-outline" style="padding:8px 14px;">Logout</button>
-                    </form>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login" style="color:#dbeafe;">Sign In</a>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary" style="padding:8px 14px;">Sign Up</a>
-                }
+    body {
+        background: radial-gradient(circle at 15% 10%, rgba(59, 130, 246, .12), transparent 35%), var(--bg);
+    }
+
+    .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 30px;
+        padding: 60px 0 36px;
+    }
+
+    .tag {
+        display: inline-block;
+        font-size: 12px;
+        color: #93C5FD;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        margin-bottom: 18px;
+        background: rgba(59, 130, 246, .1);
+    }
+
+    h1 {
+        font-size: clamp(34px, 5vw, 62px);
+        line-height: 1.02;
+        margin: 0 0 18px;
+        letter-spacing: -1.2px;
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, #22D3EE, #3B82F6, #A78BFA);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero p {
+        color: #A8B3C8;
+        max-width: 520px;
+        margin: 0 0 24px;
+        line-height: 1.55;
+    }
+
+    .hero-actions { display: flex; gap: 12px; }
+
+    .stats {
+        display: grid;
+        gap: 14px;
+        align-content: start;
+    }
+
+    .panel {
+        background: linear-gradient(180deg, rgba(17, 24, 39, .95), rgba(16, 23, 36, .95));
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: inset 0 0 24px rgba(34, 211, 238, .04);
+    }
+
+    .panel h4 {
+        margin: 0 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .live-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .live-card {
+        background: #1B2438;
+        border: 1px solid rgba(59, 130, 246, .28);
+        border-radius: 12px;
+        padding: 11px;
+    }
+
+    .live-card strong { font-size: 24px; display: block; color: #60A5FA; }
+    .live-card span { color: var(--muted); font-size: 12px; }
+
+    .times {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .time-chip {
+        font-size: 12px;
+        color: #BFDBFE;
+        border: 1px solid rgba(59, 130, 246, .38);
+        border-radius: 10px;
+        padding: 6px 10px;
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .section-title {
+        text-align: center;
+        margin: 48px 0 24px;
+    }
+
+    .section-title h2 {
+        margin: 0 0 6px;
+        font-size: 42px;
+        letter-spacing: -0.8px;
+    }
+
+    .section-title p { margin: 0; color: var(--muted); }
+
+    .zones {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 56px;
+    }
+
+    .zone-card {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #111827;
+        box-shadow: 0 12px 28px rgba(2, 6, 23, .45);
+    }
+
+    .zone-card img {
+        width: 100%;
+        height: 184px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .zone-body {
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .zone-body h3 { margin: 0; font-size: 23px; }
+    .zone-body p { margin: 0; color: #A7B1C3; font-size: 14px; line-height: 1.45; }
+    .hardware {
+        color: var(--neon);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .specs {
+        border-top: 1px solid rgba(148, 163, 184, .18);
+        padding-top: 8px;
+        display: grid;
+        gap: 6px;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 12px;
+        color: #CBD5E1;
+    }
+
+    .price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2px;
+        font-weight: 600;
+    }
+
+    .price span { color: #C4B5FD; }
+
+    .btn {
+        border: 0;
+        border-radius: 11px;
+        padding: 10px 18px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+    }
+
+    .btn-primary {
+        color: white;
+        background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, .32);
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .btn-outline {
+        color: #E2E8F0;
+        border: 1px solid rgba(59, 130, 246, .35);
+        background: rgba(17, 24, 39, .7);
+    }
+
+    @@media (max-width: 980px) {
+        .hero,
+        .zones {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="hero">
+    <div>
+        <span class="tag">Premium Gaming Experience</span>
+        <h1>
+            Book your
+            <span class="gradient-text">gaming setup</span>
+            in minutes
+        </h1>
+        <p>
+            Reserve gaming PCs, VIP rooms, and console zones online. Play on the latest hardware
+            with friends in our premium club.
+        </p>
+        <div class="hero-actions"> 
+            @if (User.Identity?.IsAuthenticated != true) 
+            { 
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Book Now</a> 
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline">My Bookings</a>
+            } 
+            else 
+            { 
+                <a asp-controller="Bookings" asp-action="Reserve" class="btn btn-primary">Book Now</a> 
+                <a asp-controller="Bookings" asp-action="Index" class="btn btn-outline">My Bookings</a>
+            } 
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="panel">
+            <h4>Available now</h4>
+            <div class="live-grid">
+                <div class="live-card">
+                    <strong>@totalStations</strong>
+                    <span>PCs free</span>
+                </div>
+                <div class="live-card">
+                    <strong>@vipRooms</strong>
+                    <span>VIP rooms</span>
+                </div>
+                <div class="live-card">
+                    <strong>@consoles</strong>
+                    <span>Consoles</span>
+                </div>
             </div>
         </div>
-    </header>
-
-    <main class="container">
-        <section class="hero">
-            <div>
-                <span class="tag">Premium Gaming Experience</span>
-                <h1>
-                    Book your
-                    <span class="gradient-text">gaming setup</span>
-                    in minutes
-                </h1>
-                <p>
-                    Reserve gaming PCs, VIP rooms, and console zones online. Play on the latest hardware
-                    with friends in our premium club.
-                </p>
-                <div class="hero-actions"> 
-                    @if (User.Identity?.IsAuthenticated != true) 
-                    { 
-                        <!-- Если не вошел — обе кнопки ведут на логин -->
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Book Now</a> 
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline">My Bookings</a>
-                    } 
-                    else 
-                    { 
-                        <!-- Если вошел — ведем на бронирование и список броней -->
-                        <a asp-controller="Bookings" asp-action="Reserve" class="btn btn-primary">Book Now</a> 
-                        <a asp-controller="Bookings" asp-action="Index" class="btn btn-outline">My Bookings</a>
-                    } 
+        <div class="panel">
+            <h4>Popular Time Slots</h4>
+            <div class="times">
+                <span class="time-chip">14:00</span>
+                <span class="time-chip">16:00</span>
+                <span class="time-chip">18:00</span>
+                <span class="time-chip">20:00</span>
+                <span class="time-chip">22:00</span>
             </div>
-            </div>
-
-            <div class="stats">
-                <div class="panel">
-                    <h4>Available now</h4>
-                    <div class="live-grid">
-                        <div class="live-card">
-                            <strong>@totalStations</strong>
-                            <span>PCs free</span>
-                        </div>
-                        <div class="live-card">
-                            <strong>@vipRooms</strong>
-                            <span>VIP rooms</span>
-                        </div>
-                        <div class="live-card">
-                            <strong>@consoles</strong>
-                            <span>Consoles</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel">
-                    <h4>Popular Time Slots</h4>
-                    <div class="times">
-                        <span class="time-chip">14:00</span>
-                        <span class="time-chip">16:00</span>
-                        <span class="time-chip">18:00</span>
-                        <span class="time-chip">20:00</span>
-                        <span class="time-chip">22:00</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="section-title">
-            <h2>Gaming Zones</h2>
-            <p>Choose your perfect gaming environment</p>
         </div>
+    </div>
+</section>
 
-        <section class="zones">
-            @foreach (var zone in Model.Zones)
+<div class="section-title">
+    <h2>Gaming Zones</h2>
+    <p>Choose your perfect gaming environment</p>
+</div>
+
+<section class="zones">
+    @foreach (var zone in Model.Zones)
+    {
+        string imagePath;
+        
+        // Case-insensitive zone category matching with proper fallback
+        if (!string.IsNullOrEmpty(zone.ZoneCategory))
+        {
+            if (zone.ZoneCategory.Contains("VIP", StringComparison.OrdinalIgnoreCase))
             {
-                var imagePath = zone.Name.Contains("VIP")
-                    ? "/img/VIProoms.png"
-                    : zone.Name.Contains("Console")
-                        ? "/img/ConsoleZone.png"
-                        : "/img/PCzone.png";
-
-                <article class="zone-card">
-                    <img src="@imagePath" alt="@zone.Name" />
-                    <div class="zone-body">
-                        <h3>@zone.Name</h3>
-                        <p>@zone.Description</p>
-                        <div class="hardware">@zone.Hardware</div>
-
-                        <div class="specs">
-                            @foreach (var pc in zone.Computers)
-                            {
-                                <div class="spec-row">
-                                    <span>@pc.Name: @pc.Cpu / @pc.Gpu</span>
-                                    <span>@pc.Ram</span>
-                                </div>
-                            }
-                        </div>
-
-                        <div class="price">
-                            <span>$@zone.PricePerHour/hour</span>
-                            @if (User.Identity?.IsAuthenticated != true)
-                            {
-                                <a asp-controller="Account"
-                                   asp-action="Login"
-                                   class="btn btn-primary"
-                                   style="padding:8px 14px;">Reserve Now</a>
-                            }
-                            else
-                            {
-                                <a asp-controller="Bookings"
-                                   asp-action="Reserve"
-                                   class="btn btn-primary"
-                                   style="padding:8px 14px;">Reserve Now</a>
-                            }
-                        </div>
-                    </div>
-                </article>
+                imagePath = Url.Content("~/img/vip.jpg");
             }
-        </section>
-    </main>
+            else if (zone.ZoneCategory.Contains("Console", StringComparison.OrdinalIgnoreCase))
+            {
+                imagePath = Url.Content("~/img/console.jpg");
+            }
+            else if (zone.ZoneCategory.Contains("PC", StringComparison.OrdinalIgnoreCase))
+            {
+                imagePath = Url.Content("~/img/PCzone.png");
+            }
+            else
+            {
+                imagePath = Url.Content("~/img/GamingStation.png");
+            }
+        }
+        else
+        {
+            // Fallback for null/empty zone category
+            imagePath = Url.Content("~/img/GamingStation.png");
+        }
+        
+        var statusText = zone.IsOccupiedNow ? "Occupied" : "Available";
+        var statusColor = zone.IsOccupiedNow ? "#ef4444" : "#22c55e";
 
-    <footer>
-        <div class="container footer-grid">
-            <div>
-                <div class="logo" style="margin-bottom:10px;">
-                    <div class="logo-badge" style="
-    display: flex; 
-    align-items: center; 
-    justify-center: center; 
-    width: 48px; 
-    height: 48px; 
-    background: linear-gradient(135deg, #2563eb, #4338ca); 
-    border-radius: 12px;
-    padding: 10px;
-    overflow: hidden;">
-    <img src="/img/boxicons_joystick.png" 
-         style="width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1);" 
-         alt="Logo">
+        <article class="zone-card">
+            <img src="@imagePath" alt="" onerror="this.src='@Url.Content("~/img/GamingStation.png")'" />
+            <div class="zone-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <h3>@zone.Name</h3>
+                    <span style="font-size:12px; font-weight:700; color:white; padding:4px 10px; border-radius:999px; background:@statusColor;">@statusText</span>
+                </div>
+                <p>@zone.Description</p>
+                <div class="hardware">@zone.Hardware</div>
+
+                <div class="specs">
+                    @foreach (var pc in zone.Computers)
+                    {
+                        <div class="spec-row">
+                            <span>@pc.Name: @pc.Cpu / @pc.Gpu</span>
+                            <span>@pc.Ram</span>
+                        </div>
+                    }
                 </div>
 
-                    <div>
-                        CYBERZONE<br />
-                        <small style="color:#7dd3fc;font-weight:500;">Gaming Club</small>
-                    </div>
+                <div class="price">
+                    <span>Resource booking</span>
+                    <a asp-controller="Bookings"
+                       asp-action="Reserve"
+                       class="btn btn-primary"
+                       style="padding:8px 14px;">Reserve Now</a>
                 </div>
-                <p>Premium gaming station booking platform for students and gamers.</p>
             </div>
-            <div>
-                <h5>Quick Links</h5>
-                <ul>
-                    <li>Browse Stations</li>
-                    <li>My Bookings</li>
-                    <li>About Club</li>
-                </ul>
-            </div>
-            <div>
-                <h5>Opening Hours</h5>
-                <ul>
-                    <li>Mon-Fri: 10:00 - 23:00</li>
-                    <li>Sat-Sun: 12:00 - 02:00</li>
-                </ul>
-            </div>
-            <div>
-                <h5>Contact</h5>
-                <ul>
-                    <li>borodako.k@@gmail.com</li>
-                    <li>+375 (29) 149-83-22</li>
-                    <li>456 Tech Street</li>
-                </ul>
-            </div>
-        </div>
-        <div class="copy">
-            &copy; 2026 CYBERZONE Gaming Club. Course Project - Built with ASP.NET MVC.
-        </div>
-    </footer>
-</body>
-</html>
+        </article>
+    }
+</section>

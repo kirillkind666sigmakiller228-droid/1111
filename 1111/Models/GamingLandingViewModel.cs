@@ -7,11 +7,13 @@ public class GamingLandingViewModel
 
 public class GamingZone
 {
+    public string ZoneCategory { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Hardware { get; set; } = string.Empty;
     public decimal PricePerHour { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public bool IsOccupiedNow { get; set; }
     public List<ComputerSpec> Computers { get; set; } = [];
 }
 

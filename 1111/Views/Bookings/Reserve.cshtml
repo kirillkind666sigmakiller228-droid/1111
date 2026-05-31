@@ -1,8 +1,416 @@
+﻿@model IEnumerable<_1111.Models.Computer>
 @{
-    ViewData["Title"] = "Reserve";
+    ViewData["Title"] = "Reserve Station";
+    var search = ViewData["Search"]?.ToString() ?? "";
+    var zoneCategory = ViewData["ZoneCategory"]?.ToString() ?? "";
+    var status = ViewData["Status"]?.ToString() ?? "";
 }
 
-<div class="container py-5">
-    <h1 class="mb-3">Reservation Page</h1>
-    <p class="text-muted">You are authorized. Booking flow can be implemented here.</p>
+        @if (TempData["Error"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="mb-4 rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                @errorMessage
+            </div>
+        }
+        <div class="mb-6 flex items-center justify-between">
+            <h1 class="text-3xl font-extrabold tracking-tight">Select Your Gaming Station</h1>
+            <a asp-controller="Home" asp-action="Index" class="text-sm text-slate-400 hover:text-white">Back to Home</a>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+            <aside class="rounded-2xl border border-blue-400/30 bg-slate-900/80 p-5">
+                <h2 class="mb-4 text-lg font-semibold">Filters</h2>
+                <form method="get" asp-action="Reserve" class="space-y-4">
+                    <div>
+                        <label class="mb-1 block text-sm text-slate-300">Search</label>
+                        <input
+                            type="text"
+                            name="search"
+                            value="@search"
+                            placeholder="PC name, CPU, GPU..."
+                            class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none ring-0 transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]" />
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm text-slate-300">Zone Category</label>
+                        <select name="zoneCategory" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]">
+                            <option value="">All</option>
+                            <option value="Standard" selected="@(zoneCategory == "Standard")">Standard</option>
+                            <option value="VIP" selected="@(zoneCategory == "VIP")">VIP</option>
+                            <option value="Console" selected="@(zoneCategory == "Console")">Console</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm text-slate-300">Status</label>
+                        <select name="status" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]">
+                            <option value="">All</option>
+                            <option value="available" selected="@(status == "available")">Available</option>
+                            <option value="occupied" selected="@(status == "occupied")">Occupied</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" class="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">
+                            Apply
+                        </button>
+                        <a asp-action="Reserve" class="rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Reset</a>
+                    </div>
+                </form>
+            </aside>
+
+            <section>
+                <div class="mb-4 flex items-center justify-between">
+                    <p class="text-sm text-slate-400">Showing <span class="font-semibold text-slate-200">@Model.Count()</span> stations</p>
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach (var computer in Model)
+                    {
+                        string imagePath;
+                        
+                        // Case-insensitive zone category matching with correct file names
+                        if (!string.IsNullOrEmpty(computer.ZoneCategory))
+                        {
+                            if (computer.ZoneCategory.Contains("VIP", StringComparison.OrdinalIgnoreCase))
+                            {
+                                imagePath = Url.Content("~/img/vip.jpg");
+                            }
+                            else if (computer.ZoneCategory.Contains("Console", StringComparison.OrdinalIgnoreCase))
+                            {
+                                imagePath = Url.Content("~/img/console.jpg");
+                            }
+                            else if (computer.ZoneCategory.Contains("PC", StringComparison.OrdinalIgnoreCase))
+                            {
+                                imagePath = Url.Content("~/img/PCzone.png");
+                            }
+                            else
+                            {
+                                imagePath = Url.Content("~/img/standard.jpg");
+                            }
+                        }
+                        else
+                        {
+                            // Fallback for null/empty zone category
+                            imagePath = Url.Content("~/img/standard.jpg");
+                        }
+
+                        var statusClasses = computer.IsAvailable
+                            ? "bg-emerald-500/90 text-white"
+                            : "bg-rose-500/90 text-white";
+                        var statusText = computer.IsAvailable ? "Available" : "Occupied";
+
+                        <article class="overflow-hidden rounded-2xl border border-blue-400/20 bg-slate-900/70">
+                            <div class="relative">
+                                <img src="@imagePath" alt="" class="h-44 w-full object-cover" onerror="this.src='@Url.Content("~/img/standard.jpg")'" />
+                                <span class="absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold @statusClasses">@statusText</span>
+                            </div>
+
+                            <div class="space-y-3 p-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h3 class="text-lg font-bold">@computer.Name</h3>
+                                </div>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-1 text-xs text-cyan-200">CPU: @computer.Cpu</span>
+                                    <span class="rounded-lg border border-blue-400/30 bg-blue-500/10 px-2.5 py-1 text-xs text-blue-200">GPU: @computer.Gpu</span>
+                                    <span class="rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2.5 py-1 text-xs text-fuchsia-200">RAM: @computer.Ram</span>
+                                </div>
+
+                                <button type="button"
+                                        class="reserve-btn inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                                        data-pcid="@computer.Id"
+                                        data-pcname="@computer.Name">
+                                    Reserve Now
+                                </button>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        <div id="reservationModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4">
+    <div class="w-full max-w-xl rounded-2xl border border-blue-400/30 bg-slate-900 p-5">
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold">Confirm reservation</h3>
+            <button type="button" id="closeModalBtn" class="text-2xl text-slate-400 hover:text-white">&times;</button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <p class="text-sm text-slate-400">PC Name</p>
+                <p id="modalPcName" class="font-semibold text-slate-100"></p>
+            </div>
+            <div>
+                <label for="bookingDate" class="mb-1 block text-sm text-slate-300">Date</label>
+                <input id="bookingDate" type="date" class="w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]" />
+            </div>
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="w-full">
+                    <label for="startTimeSelect" class="mb-1 block text-sm text-slate-300">Start Time</label>
+                    <select id="startTimeSelect" class="h-10 w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]"></select>
+                </div>
+                <div class="w-full">
+                    <label for="endTimeSelect" class="mb-1 block text-sm text-slate-300">End Time</label>
+                    <select id="endTimeSelect" class="h-10 w-full rounded-xl border border-blue-900 bg-slate-950 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,.2)]"></select>
+                </div>
+            </div>
+            <div>
+                <p class="mb-2 text-sm text-slate-300">Occupied timeline (10:00 - 22:00)</p>
+                <div id="timeline" class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-12"></div>
+            </div>
+            <div class="rounded-xl border border-blue-400/20 bg-slate-950 p-3">
+                <p id="bookingSummary" class="text-sm text-slate-200">You are booking ...</p>
+                <p id="slotError" class="mt-1 hidden text-sm text-rose-400">This time slot is already taken</p>
+            </div>
+        </div>
+
+        <div class="mt-5 flex gap-2">
+            <button type="button" id="cancelBtn" class="flex-1 rounded-xl border border-slate-600 px-3 py-2 text-sm text-slate-300 hover:text-white">Cancel</button>
+            <button type="button" id="confirmBtn" class="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-110">Confirm Booking</button>
+        </div>
+    </div>
 </div>
+
+<form id="antiForgeryForm" method="post">@Html.AntiForgeryToken()</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const modal = document.getElementById("reservationModal");
+        const modalPcName = document.getElementById("modalPcName");
+        const bookingDate = document.getElementById("bookingDate");
+        const startTimeSelect = document.getElementById("startTimeSelect");
+        const endTimeSelect = document.getElementById("endTimeSelect");
+        const timeline = document.getElementById("timeline");
+        const bookingSummary = document.getElementById("bookingSummary");
+        const slotError = document.getElementById("slotError");
+        const confirmBtn = document.getElementById("confirmBtn");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const antiForgeryToken = document.querySelector("#antiForgeryForm input[name='__RequestVerificationToken']").value;
+
+        let selectedPcId = 0;
+        let selectedPcName = "";
+        let occupiedHours = [];
+        let pastHours = [];
+
+        function formatHour(hour) {
+            return `${String(hour).padStart(2, "0")}:00`;
+        }
+
+        function getSelectedHour(selectEl) {
+            return Number(selectEl.value);
+        }
+
+        function renderTimeOptions() {
+            startTimeSelect.innerHTML = "";
+            endTimeSelect.innerHTML = "";
+
+            for (let hour = 10; hour <= 21; hour++) {
+                const option = document.createElement("option");
+                option.value = String(hour);
+                option.textContent = formatHour(hour);
+                option.disabled = occupiedHours.includes(hour) || pastHours.includes(hour);
+                startTimeSelect.appendChild(option);
+            }
+
+            for (let hour = 11; hour <= 22; hour++) {
+                const option = document.createElement("option");
+                option.value = String(hour);
+                option.textContent = formatHour(hour);
+                option.disabled = occupiedHours.includes(hour - 1) || pastHours.includes(hour - 1);
+                endTimeSelect.appendChild(option);
+            }
+
+            if (startTimeSelect.selectedOptions[0]?.disabled) {
+                startTimeSelect.selectedIndex = [...startTimeSelect.options].findIndex(o => !o.disabled);
+            }
+            if (endTimeSelect.selectedOptions[0]?.disabled) {
+                endTimeSelect.selectedIndex = [...endTimeSelect.options].findIndex(o => !o.disabled);
+            }
+        }
+
+        function renderTimeline() {
+            timeline.innerHTML = "";
+            for (let hour = 10; hour <= 21; hour++) {
+                const item = document.createElement("div");
+                item.className = pastHours.includes(hour)
+                    ? "h-10 w-full rounded-lg border border-slate-500/40 bg-slate-600/30 px-2 text-center text-xs text-slate-400 flex items-center justify-center"
+                    : occupiedHours.includes(hour)
+                    ? "h-10 w-full rounded-lg border border-rose-400/40 bg-rose-500/20 px-2 text-center text-xs text-rose-300 flex items-center justify-center"
+                    : "h-10 w-full rounded-lg border border-emerald-400/30 bg-emerald-500/15 px-2 text-center text-xs text-emerald-300 flex items-center justify-center";
+                item.textContent = formatHour(hour);
+                timeline.appendChild(item);
+            }
+        }
+
+        function computePastHours() {
+            pastHours = [];
+            const selected = bookingDate.value;
+            if (!selected) {
+                return;
+            }
+
+            const now = new Date();
+            const today = now.toISOString().slice(0, 10);
+            if (selected !== today) {
+                return;
+            }
+
+            const minStartHour = now.getHours() + (now.getMinutes() > 0 ? 1 : 0);
+            for (let hour = 10; hour <= 21; hour++) {
+                if (hour < minStartHour) {
+                    pastHours.push(hour);
+                }
+            }
+        }
+
+        function validateSelection() {
+            const startHour = getSelectedHour(startTimeSelect);
+            const endHour = getSelectedHour(endTimeSelect);
+
+            const invalidOrder = Number.isNaN(startHour) || Number.isNaN(endHour) || endHour <= startHour;
+            const hasPastHours = !invalidOrder && pastHours.some(h => h >= startHour && h < endHour);
+            const overlaps = !invalidOrder && occupiedHours.some(h => h >= startHour && h < endHour);
+            const duration = invalidOrder ? 0 : endHour - startHour;
+
+            bookingSummary.textContent = `You are booking ${selectedPcName || "..."} for ${duration} hours`;
+
+            if (invalidOrder || overlaps || hasPastHours) {
+                slotError.classList.remove("hidden");
+                slotError.textContent = overlaps
+                    ? "This time slot is already taken"
+                    : hasPastHours
+                        ? "You cannot book past time slots for today"
+                    : "End time must be later than start time";
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add("opacity-50", "cursor-not-allowed");
+                return false;
+            }
+
+            slotError.classList.add("hidden");
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            return true;
+        }
+
+        async function loadOccupiedSlots() {
+            const dateValue = bookingDate.value;
+            if (!selectedPcId || !dateValue) {
+                return;
+            }
+
+            const url = `@Url.Action("GetOccupiedSlots", "Bookings")?pcId=${selectedPcId}&date=${encodeURIComponent(dateValue)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            occupiedHours = result.success && Array.isArray(result.occupiedHours) ? result.occupiedHours : [];
+            computePastHours();
+            renderTimeOptions();
+            renderTimeline();
+            validateSelection();
+        }
+
+        async function openModal(pcId, pcName) {
+            selectedPcId = Number(pcId);
+            selectedPcName = pcName;
+            modalPcName.textContent = pcName;
+            const today = new Date();
+            bookingDate.value = today.toISOString().slice(0, 10);
+            computePastHours();
+            await loadOccupiedSlots();
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeModal() {
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+            selectedPcId = 0;
+            selectedPcName = "";
+            occupiedHours = [];
+            pastHours = [];
+        }
+
+        document.querySelectorAll(".reserve-btn").forEach((button) => {
+            button.addEventListener("click", async () => {
+                await openModal(button.dataset.pcid, button.dataset.pcname);
+            });
+        });
+
+        closeModalBtn.addEventListener("click", closeModal);
+        cancelBtn.addEventListener("click", closeModal);
+        bookingDate.addEventListener("change", loadOccupiedSlots);
+        startTimeSelect.addEventListener("change", validateSelection);
+        endTimeSelect.addEventListener("change", validateSelection);
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        confirmBtn.addEventListener("click", async () => {
+            if (!selectedPcId) {
+                return;
+            }
+            if (!validateSelection()) {
+                return;
+            }
+
+            const dateValue = bookingDate.value;
+            const startHour = getSelectedHour(startTimeSelect);
+            const endHour = getSelectedHour(endTimeSelect);
+            const startTime = `${dateValue}T${String(startHour).padStart(2, "0")}:00:00`;
+            const endTime = `${dateValue}T${String(endHour).padStart(2, "0")}:00:00`;
+
+            try {
+                const response = await fetch('@Url.Action("CreateReservation", "Bookings")', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: new URLSearchParams({
+                        pcId: selectedPcId.toString(),
+                        startTime,
+                        endTime
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "Reservation failed");
+                }
+
+                closeModal();
+
+                const dialogResult = await Swal.fire({
+                    title: "Booking successful!",
+                    text: `${result.intervalLabel}. Do you want to see your reservations?`,
+                    icon: "success",
+                    background: "#111827",
+                    color: "#E5E7EB",
+                    showCancelButton: true,
+                    confirmButtonText: "Go to My Bookings",
+                    cancelButtonText: "Stay here",
+                    confirmButtonColor: "#3B82F6",
+                    cancelButtonColor: "#334155"
+                });
+
+                if (dialogResult.isConfirmed && result.redirectUrl) {
+                    window.location.href = result.redirectUrl;
+                } else {
+                    window.location.reload();
+                }
+            } catch (error) {
+                await Swal.fire({
+                    title: "Error",
+                    text: error.message || "Could not create reservation.",
+                    icon: "error",
+                    background: "#111827",
+                    color: "#E5E7EB",
+                    confirmButtonColor: "#3B82F6"
+                });
+            }
+        });
+    </script>
+}

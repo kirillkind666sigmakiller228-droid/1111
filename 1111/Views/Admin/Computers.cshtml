@@ -1,0 +1,191 @@
+@model IEnumerable<_1111.Models.Computer>
+@{
+    ViewData["Title"] = "Manage Computers";
+}
+
+        <div class="mb-6 flex items-center justify-between gap-2">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white">Computers</h1>
+                <p class="text-sm text-slate-400">All gaming stations with quick create/edit/delete actions.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a asp-controller="Admin" asp-action="Index" class="rounded-lg border border-blue-400/40 bg-slate-900 px-3 py-2 text-xs font-semibold text-blue-200 transition hover:border-cyan-300 hover:text-cyan-200">
+                    Back
+                </a>
+                <button type="button"
+                        id="openCreateModal"
+                        class="rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-500/20">
+                    Add Computer
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-blue-400/20 bg-slate-900/70 shadow-[0_0_24px_rgba(59,130,246,0.1)]">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="border-b border-slate-700 bg-slate-900 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3">Name</th>
+                            <th class="px-4 py-3">Zone</th>
+                            <th class="px-4 py-3">CPU</th>
+                            <th class="px-4 py-3">GPU</th>
+                            <th class="px-4 py-3">RAM</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var computer in Model)
+                        {
+                            <tr class="border-b border-slate-800/80 text-slate-200">
+                                <td class="px-4 py-3 font-semibold text-white">@computer.Name</td>
+                                <td class="px-4 py-3">@computer.ZoneCategory</td>
+                                <td class="px-4 py-3">@computer.Cpu</td>
+                                <td class="px-4 py-3">@computer.Gpu</td>
+                                <td class="px-4 py-3">@computer.Ram</td>
+                                <td class="px-4 py-3">
+                                    @if (computer.IsAvailable)
+                                    {
+                                        <button type="button"
+                                                class="status-pill rounded-full border border-emerald-400/40 bg-emerald-500/20 px-2 py-1 text-xs font-semibold text-emerald-300 transition"
+                                                data-status-color="available">
+                                            Available
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="status-pill rounded-full border border-amber-400/40 bg-amber-500/20 px-2 py-1 text-xs font-semibold text-amber-300 transition"
+                                                data-status-color="maintenance">
+                                            Maintenance
+                                        </button>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-end gap-2">
+                                        <button type="button"
+                                                class="edit-btn rounded-md border border-blue-400/40 bg-blue-500/10 px-2.5 py-1.5 text-xs font-semibold text-blue-200 transition hover:bg-blue-500/20"
+                                                data-id="@computer.Id"
+                                                data-name="@computer.Name"
+                                                data-zone="@computer.ZoneCategory"
+                                                data-cpu="@computer.Cpu"
+                                                data-gpu="@computer.Gpu"
+                                                data-ram="@computer.Ram"
+                                                data-status="@computer.IsAvailable">
+                                            Edit
+                                        </button>
+                                        <form asp-action="DeleteComputer" method="post" class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@computer.Id" />
+                                            <button type="submit" class="rounded-md border border-rose-400/40 bg-rose-500/10 px-2.5 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-500/20">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+    <div class="w-full max-w-xl rounded-2xl border border-cyan-400/30 bg-slate-900 p-5">
+        <h2 class="mb-4 text-xl font-bold text-white">Add Computer</h2>
+        <form asp-action="CreateComputer" method="post" class="space-y-3">
+            @Html.AntiForgeryToken()
+            <div class="grid gap-3 md:grid-cols-2">
+                <input name="Name" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" placeholder="Name" required />
+                <input name="ZoneCategory" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" placeholder="Zone category" required />
+                <input name="Cpu" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" placeholder="CPU" required />
+                <input name="Gpu" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" placeholder="GPU" required />
+                <input name="Ram" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" placeholder="RAM" required />
+            </div>
+            <input type="hidden" name="PricePerHour" value="0" />
+            <select name="IsAvailable" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white">
+                <option value="true">Available</option>
+                <option value="false">Maintenance</option>
+            </select>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="close-modal rounded-md border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-300">Close</button>
+                <button type="submit" class="rounded-md border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-200">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+    <div class="w-full max-w-xl rounded-2xl border border-blue-400/30 bg-slate-900 p-5">
+        <h2 class="mb-4 text-xl font-bold text-white">Edit Computer</h2>
+        <form asp-action="EditComputer" method="post" class="space-y-3">
+            @Html.AntiForgeryToken()
+            <input id="edit-id" name="Id" type="hidden" />
+            <div class="grid gap-3 md:grid-cols-2">
+                <input id="edit-name" name="Name" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" required />
+                <input id="edit-zone" name="ZoneCategory" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" required />
+                <input id="edit-cpu" name="Cpu" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" required />
+                <input id="edit-gpu" name="Gpu" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" required />
+                <input id="edit-ram" name="Ram" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" required />
+            </div>
+            <input id="edit-price" name="PricePerHour" type="hidden" value="0" />
+            <select id="edit-status" name="IsAvailable" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white">
+                <option value="true">Available</option>
+                <option value="false">Maintenance</option>
+            </select>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="close-modal rounded-md border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-300">Close</button>
+                <button type="submit" class="rounded-md border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-xs font-semibold text-blue-200">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const createModal = document.getElementById("createModal");
+        const editModal = document.getElementById("editModal");
+        const openCreateButton = document.getElementById("openCreateModal");
+        const closeButtons = document.querySelectorAll(".close-modal");
+
+        const showModal = (modal) => modal.classList.remove("hidden");
+        const hideModal = (modal) => modal.classList.add("hidden");
+
+        openCreateButton?.addEventListener("click", () => showModal(createModal));
+        closeButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                hideModal(createModal);
+                hideModal(editModal);
+            });
+        });
+
+        [createModal, editModal].forEach((modal) => {
+            modal?.addEventListener("click", (event) => {
+                if (event.target === modal) hideModal(modal);
+            });
+        });
+
+        document.querySelectorAll(".edit-btn").forEach((button) => {
+            button.addEventListener("click", () => {
+                document.getElementById("edit-id").value = button.dataset.id ?? "";
+                document.getElementById("edit-name").value = button.dataset.name ?? "";
+                document.getElementById("edit-zone").value = button.dataset.zone ?? "";
+                document.getElementById("edit-cpu").value = button.dataset.cpu ?? "";
+                document.getElementById("edit-gpu").value = button.dataset.gpu ?? "";
+                document.getElementById("edit-ram").value = button.dataset.ram ?? "";
+                document.getElementById("edit-price").value = "0";
+                document.getElementById("edit-status").value = (button.dataset.status ?? "true").toLowerCase();
+                showModal(editModal);
+            });
+        });
+
+        document.querySelectorAll(".status-pill").forEach((pill) => {
+            pill.addEventListener("click", () => {
+                const selectedClass = pill.dataset.statusColor === "maintenance"
+                    ? "ring-2 ring-amber-300/70 shadow-[0_0_16px_rgba(251,191,36,0.45)]"
+                    : "ring-2 ring-emerald-300/70 shadow-[0_0_16px_rgba(52,211,153,0.45)]";
+                pill.classList.toggle("scale-105");
+                pill.classList.toggle("font-bold");
+                selectedClass.split(" ").forEach((cssClass) => pill.classList.toggle(cssClass));
+            });
+        });
+    </script>
+}

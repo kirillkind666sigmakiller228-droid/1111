@@ -1,0 +1,101 @@
+@model IEnumerable<_1111.Models.Booking>
+@{
+    ViewData["Title"] = "Manage Bookings";
+}
+
+<div class="min-h-screen bg-[#0B0E14] py-8 text-slate-100">
+    <div class="mx-auto w-[92%] max-w-7xl">
+        <div class="mb-6 flex items-center justify-between gap-2">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white">Bookings</h1>
+                <p class="text-sm text-slate-400">Full list of user reservations with admin cancellation access.</p>
+            </div>
+            <a asp-controller="Home" asp-action="Index" class="rounded-lg border border-blue-400/40 bg-slate-900 px-3 py-2 text-xs font-semibold text-blue-200 transition hover:border-cyan-300 hover:text-cyan-200">
+                Back to Website
+            </a>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-blue-400/20 bg-slate-900/70 shadow-[0_0_24px_rgba(59,130,246,0.1)]">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="border-b border-slate-700 bg-slate-900 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3">User</th>
+                            <th class="px-4 py-3">Email</th>
+                            <th class="px-4 py-3">Контакт клиента</th>
+                            <th class="px-4 py-3">Computer</th>
+                            <th class="px-4 py-3">Interval</th>
+                            <th class="px-4 py-3">Hours</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model)
+                        {
+                            var startLocal = booking.StartTimeUtc.ToLocalTime();
+                            var endLocal = booking.EndTimeUtc.ToLocalTime();
+                            <tr class="border-b border-slate-800/80 text-slate-200">
+                                <td class="px-4 py-3 font-semibold text-white">@(booking.User?.UserName ?? "Unknown")</td>
+                                <td class="px-4 py-3 text-slate-300">@(booking.User?.Email ?? "-")</td>
+                                <td class="px-4 py-3 text-cyan-200">@(booking.User?.PhoneNumber ?? "-")</td>
+                                <td class="px-4 py-3">@booking.Computer?.Name</td>
+                                <td class="px-4 py-3">@startLocal.ToString("dd.MM.yyyy HH:mm") - @endLocal.ToString("HH:mm")</td>
+                                <td class="px-4 py-3">@booking.Hours</td>
+                                <td class="px-4 py-3">
+                                    @if (booking.Status == "Cancelled")
+                                    {
+                                        <span class="rounded-full bg-slate-500/20 px-2 py-1 text-xs font-semibold text-slate-300">Cancelled</span>
+                                    }
+                                    else if (booking.Status == "Confirmed")
+                                    {
+                                        <span class="rounded-full bg-blue-500/20 px-2 py-1 text-xs font-semibold text-blue-300">Confirmed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-semibold text-emerald-300">@booking.Status</span>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-end gap-2">
+                                        @if (booking.Status == _1111.Models.BookingStatus.Confirmed.ToString())
+                                        {
+                                            <form asp-action="ConfirmArrival" method="post" class="m-0">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@booking.Id" />
+                                                <button type="submit" class="rounded-md border border-emerald-400/40 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20">
+                                                    Mark as Active
+                                                </button>
+                                            </form>
+                                            <form asp-action="NoShowCancel" method="post" class="m-0">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@booking.Id" />
+                                                <button type="submit" class="rounded-md border border-rose-400/40 bg-rose-500/10 px-2.5 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-500/20">
+                                                    No Show / Cancel
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (booking.Status == _1111.Models.BookingStatus.Active.ToString())
+                                        {
+                                            <form asp-action="NoShowCancel" method="post" class="m-0">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@booking.Id" />
+                                                <button type="submit" class="rounded-md border border-rose-400/40 bg-rose-500/10 px-2.5 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-500/20">
+                                                    No Show / Cancel
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-xs text-slate-500">No actions</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
